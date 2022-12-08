@@ -21,6 +21,7 @@ import {
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { useRef, useEffect } from "react";
+import { init, identify, Identify } from "@amplitude/analytics-browser";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -73,7 +74,10 @@ function useIdentify() {
     onConnect: ({ address }) => {
       if (initializedRef.current === true && identifiedRef.current === false) {
         // identify a user when they connect to an account
-        console.log(`.identify(${address})`);
+        console.log(`.identify(identifyObj, { user_id: ${address} })`);
+        const identifyObj = new Identify();
+        identify(identifyObj, { user_id: address });
+
         identifiedRef.current = true;
       }
     },
@@ -82,7 +86,8 @@ function useIdentify() {
   useEffect(() => {
     if (initializedRef.current === false) {
       // initialize the sdk when the app loads
-      console.log(`initialize('my-amplitude-api-key', ${address})`);
+      console.log(`7e96df35bc6183b480fb6b26ed5716e3, ${address})`);
+      init("7e96df35bc6183b480fb6b26ed5716e3", address);
       initializedRef.current = true;
       if (address) {
         identifiedRef.current = true;
