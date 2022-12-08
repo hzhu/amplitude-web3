@@ -11,9 +11,16 @@ import {
   trustWallet,
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import {
+  chain,
+  useAccount,
+  WagmiConfig,
+  createClient,
+  configureChains,
+} from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { useRef, useEffect } from "react";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -59,7 +66,34 @@ const wagmiClient = createClient({
   webSocketProvider,
 });
 
+function useIdentify() {
+  const initializedRef = useRef(false); // was amplitude sdk initialized?
+  const identifiedRef = useRef(false); // was the user identified?
+  const { address } = useAccount({
+    onConnect: ({ address }) => {
+      if (initializedRef.current === true && identifiedRef.current === false) {
+        // identify a user when they connect to an account
+        console.log(`.identify(${address})`);
+        identifiedRef.current = true;
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (initializedRef.current === false) {
+      // initialize the sdk when the app loads
+      console.log(`initialize('my-amplitude-api-key', ${address})`);
+      initializedRef.current = true;
+      if (address) {
+        identifiedRef.current = true;
+      }
+    }
+  }, [address]);
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
+  useIdentify();
+
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider appInfo={demoAppInfo} chains={chains}>

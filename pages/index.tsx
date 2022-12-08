@@ -1,5 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   return (
@@ -11,6 +12,15 @@ const Home: NextPage = () => {
       }}
     >
       <ConnectButton />
+      <br />
+      <ul>
+        <li>
+          <Link href="/">Home</Link>
+        </li>
+        <li>
+          <Link href="page1">Page 1</Link>
+        </li>
+      </ul>
     </div>
   );
 };
